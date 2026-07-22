@@ -25,13 +25,14 @@ npm run preview        # prévisualiser le build de production
 - `src/styles/tokens.css` — couleurs et typographies de la charte graphique OVYA Rent
 - `src/lib/whatsapp.ts` — génération des liens WhatsApp pré-remplis
 
-## Déploiement (Hostinger)
+## Déploiement (Hostinger — hébergement Node.js)
 
-Le site est un site statique Astro (`output: "static"`, aucun adaptateur serveur) : Hostinger peut builder directement depuis ce dépôt Git.
+Le site tourne en mode serveur Astro (`output: "server"`, adaptateur `@astrojs/node` en mode `standalone`) : toutes les pages restent pré-générées (`export const prerender = true` sur chaque route) pour rester rapides, mais le build produit un vrai process Node que Hostinger peut démarrer et garder actif.
 
 - Commande d'installation : `npm install`
 - Commande de build : `npm run build`
-- Dossier de sortie à publier : `dist`
+- Commande de démarrage : `npm start` (exécute `node ./dist/server/entry.mjs`)
+- Le serveur écoute sur `process.env.PORT` (et `process.env.HOST`) fournis par Hostinger
 - Version de Node requise : voir le champ `engines` de `package.json` (18.20.8+)
 
 ## À compléter avant mise en ligne
