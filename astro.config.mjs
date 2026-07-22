@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://ovya-rent.com",
+  output: "static",
   vite: {
     plugins: [tailwindcss()],
   },

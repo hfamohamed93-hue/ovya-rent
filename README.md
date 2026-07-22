@@ -25,6 +25,15 @@ npm run preview        # prévisualiser le build de production
 - `src/styles/tokens.css` — couleurs et typographies de la charte graphique OVYA Rent
 - `src/lib/whatsapp.ts` — génération des liens WhatsApp pré-remplis
 
+## Déploiement (Hostinger)
+
+Le site est un site statique Astro (`output: "static"`, aucun adaptateur serveur) : Hostinger peut builder directement depuis ce dépôt Git.
+
+- Commande d'installation : `npm install`
+- Commande de build : `npm run build`
+- Dossier de sortie à publier : `dist`
+- Version de Node requise : voir le champ `engines` de `package.json` (18.20.8+)
+
 ## À compléter avant mise en ligne
 
 - Photos réelles des véhicules (actuellement en placeholder dans `src/content/vehicules/`)
