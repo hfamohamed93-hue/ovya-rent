@@ -1,0 +1,165 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/logo.png";
+import SiteSettings from "./SiteSettings.astro";
+import { t, localePrefix, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = "fr" } = Astro.props;
+const strings = t(locale);
+const prefix = localePrefix[locale];
+
+// Only the homepage exists in a translated version for now; other pages fall back to French.
+const navLinks = [
+  { href: `${prefix}/`, label: strings.nav.accueil },
+  { href: `/flotte`, label: strings.nav.flotte },
+  { href: `/tarifs`, label: strings.nav.tarifs },
+  { href: `/a-propos`, label: strings.nav.aPropos },
+  { href: `/faq`, label: strings.nav.faq },
+  { href: `/contact`, label: strings.nav.contact },
+];
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+  return href === `${prefix}/` ? currentPath === href : currentPath.startsWith(href);
+}
+---
+
+<header id="site-header" class="sticky top-0 z-40 border-b border-noir-profond/10 bg-blanc-pur/80 backdrop-blur-xl backdrop-saturate-150 transition-shadow duration-300">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+    <a href={`${prefix}/`} class="flex items-center gap-2" aria-label="OVYA Rent">
+      <Image src={logo} alt="OVYA Rent" width={140} height={70} class="h-12 w-auto" />
+    </a>
+
+    <nav class="hidden items-center gap-6 lg:flex" aria-label="Navigation principale">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "font-body text-sm font-medium transition-colors hover:text-rouge-maroc",
+              isActive(link.href) ? "text-rouge-maroc" : "text-noir-profond",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <div class="hidden sm:block">
+        <SiteSettings locale={locale} />
+      </div>
+      <a
+        href="/reservation"
+        class="btn-shine hidden rounded-full bg-rouge-maroc px-5 py-2.5 font-body text-sm font-semibold text-blanc-pur transition-all duration-300 hover:bg-[#a80d26] sm:inline-block"
+      >
+        {strings.nav.reserver}
+      </a>
+      <button
+        id="menu-toggle"
+        type="button"
+        class="menu-toggle-btn inline-flex cursor-pointer items-center justify-center rounded-md p-2 text-noir-profond transition-colors duration-300 hover:bg-fond lg:hidden"
+        aria-label="Menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line class="menu-line menu-line-top" x1="3" y1="6" x2="21" y2="6"></line>
+          <line class="menu-line menu-line-middle" x1="3" y1="12" x2="21" y2="12"></line>
+          <line class="menu-line menu-line-bottom" x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-menu" class="hidden flex-col gap-1 border-t border-noir-profond/10 px-4 pb-4 lg:hidden" aria-label="Navigation mobile">
+    {
+      navLinks.map((link) => (
+        <a href={link.href} class="rounded-md px-2 py-2.5 font-body text-sm font-medium text-noir-profond hover:bg-fond">
+          {link.label}
+        </a>
+      ))
+    }
+    <div class="mt-3 border-t border-noir-profond/10 pt-3 sm:hidden">
+      <SiteSettings locale={locale} />
+    </div>
+    <a href="/reservation" class="mt-2 rounded-full bg-rouge-maroc px-5 py-2.5 text-center font-body text-sm font-semibold text-blanc-pur">
+      {strings.nav.reserver}
+    </a>
+  </nav>
+</header>
+
+<script>
+  function initMenuToggle() {
+    const toggle = document.getElementById("menu-toggle");
+    const menu = document.getElementById("mobile-menu");
+    if (!toggle || !menu) return;
+
+    const openMenu = () => {
+      menu.classList.remove("hidden");
+      menu.classList.add("flex");
+      toggle.setAttribute("aria-expanded", "true");
+    };
+
+    const closeMenu = () => {
+      menu.classList.add("hidden");
+      menu.classList.remove("flex");
+      toggle.setAttribute("aria-expanded", "false");
+    };
+
+    toggle.addEventListener("click", () => {
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      if (isOpen) closeMenu();
+      else openMenu();
+    });
+  }
+
+  function initHeaderScrollShadow() {
+    const header = document.getElementById("site-header");
+    if (!header) return;
+
+    const update = () => {
+      header.classList.toggle("header-scrolled", window.scrollY > 8);
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", update), {
+      once: true,
+    });
+  }
+
+  document.addEventListener("astro:page-load", initMenuToggle);
+  document.addEventListener("astro:page-load", initHeaderScrollShadow);
+</script>
+
+<style>
+  .menu-line {
+    transform-origin: center;
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-toggle-btn[aria-expanded="true"] .menu-line-top {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .menu-toggle-btn[aria-expanded="true"] .menu-line-middle {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .menu-toggle-btn[aria-expanded="true"] .menu-line-bottom {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .menu-toggle-btn:active {
+    transform: scale(0.9);
+  }
+</style>

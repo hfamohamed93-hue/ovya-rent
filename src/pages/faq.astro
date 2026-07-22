@@ -1,0 +1,59 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const questions = [
+  {
+    q: "Y a-t-il un âge minimum pour louer un véhicule ?",
+    r: "Non, il n'y a pas d'âge minimum imposé. Contactez-nous sur WhatsApp pour vérifier les conditions selon le véhicule choisi.",
+  },
+  {
+    q: "Quels documents dois-je présenter ?",
+    r: "Un permis de conduire valide (national ou international selon votre pays d'origine) et une pièce d'identité — passeport pour les visiteurs étrangers, CIN pour les résidents marocains.",
+  },
+  {
+    q: "Une caution est-elle demandée ?",
+    r: "Le montant de la caution dépend du véhicule choisi et vous est communiqué directement par message avant la réservation.",
+  },
+  {
+    q: "Les véhicules sont-ils assurés ?",
+    r: "Oui, tous nos véhicules sont couverts par une assurance complète incluse dans le prix de la location.",
+  },
+  {
+    q: "Comment se passe la livraison du véhicule ?",
+    r: "Nous livrons à l'aéroport, à votre hôtel ou directement à domicile, selon ce qui vous arrange le mieux.",
+  },
+  {
+    q: "Comment réserver un véhicule ?",
+    r: "Via notre formulaire de réservation en ligne, ou directement sur WhatsApp. Nous confirmons la disponibilité et les modalités avant votre arrivée.",
+  },
+  {
+    q: "Le paiement se fait-il en ligne ?",
+    r: "Non, le paiement s'effectue sur place, à la prise en charge du véhicule.",
+  },
+];
+---
+
+<Layout
+  title="FAQ"
+  description="Questions fréquentes sur la location de voiture avec OVYA Rent au Maroc : âge minimum, documents requis, assurance, livraison, réservation."
+>
+  <section class="mx-auto max-w-3xl px-4 py-14 sm:px-6">
+    <h1 class="font-heading text-3xl font-bold text-noir-profond sm:text-4xl">Questions fréquentes</h1>
+
+    <div class="mt-8 space-y-3">
+      {
+        questions.map((item) => (
+          <details class="group rounded-[12px] border border-noir-profond/10 p-5 open:bg-fond">
+            <summary class="cursor-pointer list-none font-body text-sm font-semibold text-noir-profond marker:content-none">
+              <span class="flex items-center justify-between gap-4">
+                {item.q}
+                <span class="text-noir-profond/40 transition-transform group-open:rotate-45">+</span>
+              </span>
+            </summary>
+            <p class="mt-3 font-body text-sm leading-relaxed text-noir-profond/60">{item.r}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,318 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CarCard from "../components/CarCard.astro";
+import CategorieCard from "../components/CategorieCard.astro";
+import MoroccanDivider from "../components/MoroccanDivider.astro";
+import MarquesMarquee from "../components/MarquesMarquee.astro";
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import heroImage from "../assets/hero-marrakech.png";
+import { categorieImage } from "../lib/categorie-image";
+import { getVehiculePhoto } from "../lib/vehicule-image";
+import { getMarquesDisponibles } from "../lib/marques";
+
+const tousVehicules = (await getCollection("vehicules")).filter((v) => v.data.disponible);
+const vehicules = tousVehicules.slice(0, 3);
+const marques = await getMarquesDisponibles();
+
+const categories = [
+  { nom: "Citadine & Compacte", description: "Pour les petits budgets et la ville" },
+  { nom: "Berline", description: "Pour le confort et les voyages" },
+  { nom: "SUV", description: "Tous les SUV ensemble" },
+  { nom: "Sport & Cabriolet", description: "Les voitures plaisir" },
+  { nom: "Van", description: "Pour les groupes" },
+] as const;
+
+const categoriesAvecPhotos = categories.map((categorie) => {
+  const photos = tousVehicules
+    .filter((v) => v.data.categorie === categorie.nom)
+    .map((v) => getVehiculePhoto(v.data.photo))
+    .filter((photo) => photo !== undefined);
+  return { ...categorie, photos: photos.length > 0 ? photos : [categorieImage[categorie.nom]] };
+});
+
+const chiffresCles = [
+  { valeur: 100, prefix: "", suffix: "%", label: "Clients satisfaits", icone: "etoile" },
+  { valeur: 50, prefix: "+", suffix: "", label: "Véhicules récents", icone: "cle" },
+  { valeur: 24, prefix: "", suffix: "h/7j", label: "Assistance & livraison", icone: "support" },
+] as const;
+
+const reassurance = [
+  {
+    titre: "Assurance incluse",
+    texte: "Tous les véhicules sont couverts par une assurance complète.",
+    icone: "shield",
+  },
+  {
+    titre: "Assistance 7j/7",
+    texte: "Une équipe disponible sur WhatsApp, jour et nuit.",
+    icone: "chat",
+  },
+  {
+    titre: "Livraison partout",
+    texte: "À l'aéroport, à votre hôtel ou où vous le souhaitez.",
+    icone: "pin",
+  },
+  {
+    titre: "Réservation facile",
+    texte: "En quelques clics, sans paperasse.",
+    icone: "check",
+  },
+] as const;
+
+const pointsForts = [
+  {
+    titre: "Modernité",
+    texte: "Une flotte de véhicules récents, entretenus et contrôlés avant chaque départ.",
+  },
+  {
+    titre: "Prestige",
+    texte: "Des modèles économiques aux berlines premium, pour chaque type de séjour.",
+  },
+  {
+    titre: "Fiabilité",
+    texte: "Des conditions transparentes et un service pensé pour votre tranquillité d'esprit.",
+  },
+  {
+    titre: "Réactivité",
+    texte: "Une équipe disponible directement sur WhatsApp, sans attente ni standard téléphonique.",
+  },
+];
+---
+
+<Layout
+  title="Location de voitures premium au Maroc"
+  description="OVYA Rent, agence de location de véhicules récents et premium au Maroc : Marrakech, Casablanca, Agadir, Rabat. Réservation rapide, contact direct WhatsApp."
+>
+  <section class="relative flex min-h-[92vh] items-center overflow-hidden bg-noir-profond text-blanc-pur">
+    <div id="hero-image-wrap" class="absolute inset-0 h-full w-full overflow-hidden will-change-transform">
+      <Image
+        src={heroImage}
+        alt="Flotte de véhicules OVYA Rent devant la Koutoubia à Marrakech, au coucher du soleil"
+        width={1600}
+        height={1000}
+        class="animate-ken-burns h-full w-full object-cover will-change-transform"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="absolute inset-0 bg-noir-profond/40"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-noir-profond/80 via-noir-profond/10 to-noir-profond/30"></div>
+
+    <div class="relative mx-auto flex max-w-6xl flex-col gap-6 px-4 py-24 sm:px-6 lg:py-32">
+      <p class="animate-fade-in-up font-body text-sm font-medium uppercase tracking-[0.2em] text-dore-premium">
+        Location de voitures au Maroc
+      </p>
+      <h1 class="animate-fade-in-up max-w-2xl font-heading text-4xl font-bold leading-[1.1] tracking-tight text-blanc-pur drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)] [animation-delay:150ms] sm:text-5xl lg:text-7xl">
+        Prenez la route en toute confiance.
+      </h1>
+      <span class="animate-fade-in-up h-px w-16 bg-dore-premium [animation-delay:300ms]"></span>
+      <p class="animate-fade-in-up max-w-xl font-body text-base text-blanc-pur/90 [animation-delay:400ms] sm:text-lg">
+        Véhicules récents, assistance WhatsApp 7j/7 et livraison à l'aéroport, à votre hôtel ou à domicile —
+        partout au Maroc.
+      </p>
+      <div class="animate-fade-in-up flex flex-wrap gap-4 pt-2 [animation-delay:550ms]">
+        <a
+          href="/reservation"
+          class="btn-shine rounded-full bg-rouge-maroc px-8 py-4 font-body text-sm font-semibold text-blanc-pur shadow-[0_12px_32px_-8px_rgba(200,16,46,0.55)] transition-all duration-300 hover:-translate-y-1 hover:bg-[#a80d26] hover:shadow-[0_16px_40px_-8px_rgba(200,16,46,0.65)]"
+        >
+          Réserver un véhicule
+        </a>
+        <a
+          href="/flotte"
+          class="glass-panel rounded-full px-8 py-4 font-body text-sm font-semibold text-blanc-pur transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.14]"
+        >
+          Voir la flotte
+        </a>
+      </div>
+    </div>
+
+    <MarquesMarquee marques={marques} />
+  </section>
+
+  <MoroccanDivider variant="clair" />
+
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <h2 class="font-heading text-2xl font-bold text-noir-profond sm:text-3xl">Parcourir par catégorie</h2>
+    <span class="mt-3 block h-px w-16 bg-dore-premium"></span>
+    <p class="mt-4 max-w-xl font-body text-sm text-noir-profond/60">
+      Trouvez le véhicule adapté à votre séjour, du budget économique au haut de gamme.
+    </p>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      {
+        categoriesAvecPhotos.map((categorie, i) => (
+          <CategorieCard
+            nom={categorie.nom}
+            description={categorie.description}
+            href={`/flotte?categorie=${encodeURIComponent(categorie.nom)}`}
+            photos={categorie.photos}
+            revealDelay={i * 90}
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h2 class="font-heading text-2xl font-bold text-noir-profond sm:text-3xl">Notre sélection</h2>
+        <span class="mt-3 block h-px w-16 bg-dore-premium"></span>
+        <p class="mt-4 font-body text-sm text-noir-profond/60">Un aperçu de notre flotte disponible.</p>
+      </div>
+      <a href="/flotte" class="font-body text-sm font-semibold text-rouge-maroc hover:underline">
+        Toute la flotte →
+      </a>
+    </div>
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        vehicules.map((vehicule, i) => (
+          <div data-reveal style={`--reveal-delay: ${i * 100}ms`}>
+            <CarCard vehicule={vehicule} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="bg-noir-profond py-14 text-blanc-pur">
+    <div class="mx-auto grid max-w-6xl gap-8 px-4 sm:grid-cols-3 sm:px-6">
+      {
+        chiffresCles.map((chiffre, i) => (
+          <div data-reveal style={`--reveal-delay: ${i * 120}ms`} class="flex flex-col items-center gap-3 text-center">
+            {chiffre.icone === "etoile" && (
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#D4AF37" aria-hidden="true">
+                <path d="M12 2.5l2.9 6.28 6.85.72-5.13 4.66 1.5 6.76L12 17.35l-6.12 3.57 1.5-6.76-5.13-4.66 6.85-.72L12 2.5z" />
+              </svg>
+            )}
+            {chiffre.icone === "cle" && (
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="7.5" cy="15.5" r="4.5" />
+                <path d="M11 12 20 3M17 6l2.5 2.5M14 9l2 2" />
+              </svg>
+            )}
+            {chiffre.icone === "support" && (
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 0-7 7v3a2 2 0 0 0 2 2h1v-6H6a6 6 0 0 1 12 0h-2v6h1a2 2 0 0 0 2-2v-3a7 7 0 0 0-7-7Z" />
+                <path d="M6 14v2a4 4 0 0 0 4 4h1" />
+              </svg>
+            )}
+            <p
+              class="font-heading text-3xl font-bold text-blanc-pur sm:text-4xl"
+              data-counter={chiffre.valeur}
+              data-counter-prefix={chiffre.prefix}
+              data-counter-suffix={chiffre.suffix}
+            >
+              {chiffre.prefix}0{chiffre.suffix}
+            </p>
+            <p class="font-body text-sm text-blanc-pur/70">{chiffre.label}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="bg-fond py-16">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6">
+      <h2 class="font-heading text-2xl font-bold text-noir-profond sm:text-3xl">Pourquoi choisir OVYA Rent</h2>
+      <span class="mb-10 mt-3 block h-px w-16 bg-dore-premium"></span>
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          pointsForts.map((point, i) => (
+            <div
+              data-reveal
+              style={`--reveal-delay: ${i * 90}ms`}
+              class="rounded-[12px] bg-blanc-pur p-6 shadow-[0_4px_20px_-8px_rgba(17,17,17,0.1)]"
+            >
+              <p class="font-heading text-lg font-bold text-noir-profond">{point.titre}</p>
+              <p class="mt-2 font-body text-sm text-noir-profond/60">{point.texte}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="relative border-t border-blanc-pur/10 bg-noir-profond">
+      <div class="mx-auto grid max-w-6xl gap-4 px-4 py-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+        {
+          reassurance.map((item) => (
+            <div class="glass-panel flex items-center gap-3 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.12]">
+              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-dore-premium/40 bg-dore-premium/10 text-dore-premium">
+                {item.icone === "shield" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 2 4 6v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V6z" />
+                  </svg>
+                )}
+                {item.icone === "chat" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-4-1L3 20l1-4.5a8.4 8.4 0 0 1-1-4A8.5 8.5 0 0 1 11.5 3 8.5 8.5 0 0 1 21 11.5Z" />
+                  </svg>
+                )}
+                {item.icone === "pin" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                )}
+                {item.icone === "check" && (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="m8.5 12.5 2.5 2.5 5-5" />
+                  </svg>
+                )}
+              </span>
+              <div>
+                <p class="font-heading text-sm font-bold text-blanc-pur">{item.titre}</p>
+                <p class="font-body text-xs text-blanc-pur/60">{item.texte}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+  </section>
+
+  <MoroccanDivider variant="clair" />
+
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <div class="flex flex-col items-center gap-4 rounded-[12px] bg-noir-profond px-6 py-12 text-center text-blanc-pur">
+      <h2 class="font-heading text-2xl font-bold sm:text-3xl">Une question avant de réserver ?</h2>
+      <p class="max-w-xl font-body text-sm text-blanc-pur/70">
+        Notre équipe répond directement sur WhatsApp pour vous aider à choisir le véhicule adapté à votre séjour.
+      </p>
+      <a
+        href="/contact"
+        class="btn-shine mt-2 rounded-full bg-rouge-maroc px-7 py-3.5 font-body text-sm font-semibold text-blanc-pur transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#a80d26]"
+      >
+        Nous contacter
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  function initHeroParallax() {
+    const wrap = document.getElementById("hero-image-wrap");
+    if (!wrap) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const offset = Math.min(window.scrollY * 0.18, 80);
+        wrap.style.transform = `translateY(${offset}px)`;
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("astro:before-swap", () => window.removeEventListener("scroll", onScroll), {
+      once: true,
+    });
+  }
+
+  document.addEventListener("astro:page-load", initHeroParallax);
+</script>

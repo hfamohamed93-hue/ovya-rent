@@ -1,0 +1,12 @@
+---
+interface Props {
+  variant?: "clair" | "sombre";
+}
+
+const { variant = "clair" } = Astro.props;
+const fond = variant === "sombre" ? "#111111" : "#F8F9FA";
+---
+
+<div class="flex h-10 w-full items-center justify-center sm:h-12" aria-hidden="true" style={`background-color:${fond}`}>
+  <span class="h-px w-full max-w-xs bg-gradient-to-r from-transparent via-dore-premium/70 to-transparent"></span>
+</div>

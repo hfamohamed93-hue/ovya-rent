@@ -1,0 +1,35 @@
+---
+import { getMarqueLogo } from "../lib/marque-logo";
+
+interface Props {
+  marques: string[];
+}
+
+const { marques } = Astro.props as Props;
+const marquesDefilement = [...marques, ...marques];
+---
+
+<div class="absolute inset-x-0 bottom-0 z-10 px-4 pb-6 sm:px-6 sm:pb-10">
+  <div class="marquee-wrap relative mx-auto max-w-6xl overflow-hidden rounded-[20px] border border-blanc-pur/10 bg-noir-profond/55 py-6 backdrop-blur-md sm:py-7">
+    <div class="animate-marquee flex w-max items-center">
+      {
+        marquesDefilement.map((marque, i) => {
+          const logo = getMarqueLogo(marque);
+          return (
+            <div class="flex shrink-0 items-center" aria-hidden={i >= marques.length ? "true" : undefined}>
+              <div class="flex w-28 shrink-0 flex-col items-center gap-2 px-6 sm:w-32 sm:px-8">
+                {logo && <span class="marque-logo h-7 w-7 text-blanc-pur/90 sm:h-8 sm:w-8" set:html={logo} />}
+                <span class="whitespace-nowrap font-heading text-sm font-bold tracking-wide text-blanc-pur/90 sm:text-base">
+                  {marque}
+                </span>
+              </div>
+              <span class="h-12 w-px shrink-0 bg-blanc-pur/15" />
+            </div>
+          );
+        })
+      }
+    </div>
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-noir-profond/70 to-transparent sm:w-24" />
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-noir-profond/70 to-transparent sm:w-24" />
+  </div>
+</div>

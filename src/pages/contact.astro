@@ -1,0 +1,67 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { WHATSAPP_NUMBER } from "../lib/whatsapp";
+
+const numeroAffiche = "+33 7 59 45 60 47";
+---
+
+<Layout
+  title="Contact"
+  description="Contactez OVYA Rent par WhatsApp ou via notre formulaire de contact pour toute question sur la location de voiture au Maroc."
+>
+  <section class="mx-auto max-w-2xl px-4 py-14 sm:px-6">
+    <h1 class="font-heading text-3xl font-bold text-noir-profond sm:text-4xl">Contact</h1>
+    <p class="mt-2 font-body text-sm text-noir-profond/60">
+      La façon la plus rapide de nous joindre reste WhatsApp — notre équipe vous répond directement.
+    </p>
+
+    <a
+      href={`https://wa.me/${WHATSAPP_NUMBER}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mt-6 flex items-center justify-between rounded-[12px] bg-[#25D366]/10 p-5 transition-colors hover:bg-[#25D366]/20"
+    >
+      <div>
+        <p class="font-heading font-bold text-noir-profond">Discuter sur WhatsApp</p>
+        <p class="font-body text-sm text-noir-profond/60">{numeroAffiche}</p>
+      </div>
+      <span class="font-body text-sm font-semibold text-[#128C4B]">Ouvrir →</span>
+    </a>
+
+    <form id="form-contact" class="mt-10 space-y-5">
+      <div>
+        <label for="nom" class="font-body text-sm font-medium text-noir-profond">Nom</label>
+        <input type="text" id="nom" name="nom" required class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond" />
+      </div>
+      <div>
+        <label for="message" class="font-body text-sm font-medium text-noir-profond">Message</label>
+        <textarea id="message" name="message" rows="4" required class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond"></textarea>
+      </div>
+      <button
+        type="submit"
+        class="w-full rounded-full bg-rouge-maroc px-7 py-3.5 font-body text-sm font-semibold text-blanc-pur transition-opacity hover:opacity-90"
+      >
+        Envoyer sur WhatsApp
+      </button>
+    </form>
+  </section>
+</Layout>
+
+<script>
+  import { whatsappLink } from "../lib/whatsapp";
+
+  const form = document.getElementById("form-contact") as HTMLFormElement;
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const nom = String(data.get("nom") || "").trim();
+    const message = String(data.get("message") || "").trim();
+
+    window.open(
+      whatsappLink(`Bonjour OVYA Rent, je suis ${nom}.\n${message}`),
+      "_blank",
+      "noopener,noreferrer",
+    );
+  });
+</script>

@@ -1,0 +1,111 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const vehicules = (await getCollection("vehicules")).filter((v) => v.data.disponible);
+
+const villesLieux = [
+  "Marrakech",
+  "Casablanca",
+  "Agadir",
+  "Rabat",
+  "Tanger",
+  "Tétouan",
+  "Fès",
+  "Oujda",
+  "Essaouira",
+  "Beni Mellal",
+  "Al Hoceima",
+  "Nador",
+];
+const lieux = villesLieux.flatMap((ville) => [`${ville} - Aéroport`, `${ville} - Ville`]);
+---
+
+<Layout
+  title="Réservation"
+  description="Demandez la réservation de votre véhicule OVYA Rent au Maroc : choisissez vos dates, votre lieu de prise en charge, et envoyez votre demande directement sur WhatsApp."
+>
+  <section class="mx-auto max-w-2xl px-4 py-14 sm:px-6">
+    <h1 class="font-heading text-3xl font-bold text-noir-profond sm:text-4xl">Demande de réservation</h1>
+    <p class="mt-2 font-body text-sm text-noir-profond/60">
+      Remplissez ce formulaire : nous ouvrons WhatsApp avec votre demande pré-remplie, à envoyer à notre équipe.
+      Aucune donnée n'est stockée ni transmise ailleurs.
+    </p>
+
+    <form id="form-reservation" class="mt-8 space-y-5">
+      <div>
+        <label for="vehicule" class="font-body text-sm font-medium text-noir-profond">Véhicule souhaité</label>
+        <select id="vehicule" name="vehicule" class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond">
+          <option value="">Pas encore décidé</option>
+          {vehicules.map((v) => (
+            <option
+              value={`${v.data.marque} ${v.data.modele}`}
+              data-price-eur={v.data.prixParJourEUR ?? v.data.prixParJourMAD}
+              data-price-mad={v.data.prixParJourMAD}
+              data-label={`${v.data.marque} ${v.data.modele} — `}
+              data-suffix="/jour"
+            >
+              {v.data.marque} {v.data.modele} — {v.data.prixParJourEUR ?? v.data.prixParJourMAD} €/jour
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        <div>
+          <label for="date-debut" class="font-body text-sm font-medium text-noir-profond">Date de début</label>
+          <input type="date" id="date-debut" name="date-debut" required class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond" />
+        </div>
+        <div>
+          <label for="date-fin" class="font-body text-sm font-medium text-noir-profond">Date de fin</label>
+          <input type="date" id="date-fin" name="date-fin" required class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond" />
+        </div>
+      </div>
+
+      <div>
+        <label for="lieu" class="font-body text-sm font-medium text-noir-profond">Lieu de prise en charge / restitution</label>
+        <select id="lieu" name="lieu" required class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond">
+          <option value="">Sélectionnez un lieu</option>
+          {lieux.map((lieu) => <option value={lieu}>{lieu}</option>)}
+        </select>
+      </div>
+
+      <div>
+        <label for="nom" class="font-body text-sm font-medium text-noir-profond">Nom complet</label>
+        <input type="text" id="nom" name="nom" required class="mt-1.5 w-full rounded-md border border-noir-profond/15 px-4 py-2.5 font-body text-sm text-noir-profond" />
+      </div>
+
+      <button
+        type="submit"
+        class="btn-shine w-full rounded-full bg-rouge-maroc px-7 py-3.5 font-body text-sm font-semibold text-blanc-pur transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#a80d26]"
+      >
+        Envoyer la demande sur WhatsApp
+      </button>
+    </form>
+  </section>
+</Layout>
+
+<script>
+  import { whatsappLink } from "../lib/whatsapp";
+
+  const form = document.getElementById("form-reservation") as HTMLFormElement;
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const vehicule = String(data.get("vehicule") || "").trim();
+    const dateDebut = String(data.get("date-debut") || "");
+    const dateFin = String(data.get("date-fin") || "");
+    const lieu = String(data.get("lieu") || "");
+    const nom = String(data.get("nom") || "").trim();
+
+    const lignes = [
+      `Bonjour OVYA Rent, je suis ${nom} et je souhaite réserver un véhicule.`,
+      vehicule ? `Véhicule : ${vehicule}` : null,
+      `Dates : du ${dateDebut} au ${dateFin}`,
+      `Lieu de prise en charge : ${lieu}`,
+    ].filter(Boolean);
+
+    window.open(whatsappLink(lignes.join("\n")), "_blank", "noopener,noreferrer");
+  });
+</script>

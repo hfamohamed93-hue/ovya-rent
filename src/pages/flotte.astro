@@ -1,0 +1,111 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CarCard from "../components/CarCard.astro";
+import { getCollection } from "astro:content";
+
+const vehicules = (await getCollection("vehicules")).filter((v) => v.data.disponible);
+
+const categories = [
+  "Toutes",
+  "Citadine & Compacte",
+  "Berline",
+  "SUV",
+  "Sport & Cabriolet",
+  "Van",
+];
+const transmissions = ["Toutes", "Manuelle", "Automatique"];
+const carburants = ["Tous", "Essence", "Diesel"];
+---
+
+<Layout
+  title="Notre flotte de véhicules"
+  description="Découvrez la flotte OVYA Rent : citadines, SUV et véhicules de luxe disponibles à la location au Maroc, avec filtres par catégorie, boîte et carburant."
+>
+  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+    <h1 class="font-heading text-3xl font-bold text-noir-profond sm:text-4xl">Notre flotte</h1>
+    <p class="mt-2 max-w-2xl font-body text-sm text-noir-profond/60">
+      Filtrez par catégorie, transmission ou carburant pour trouver le véhicule adapté à votre séjour.
+    </p>
+
+    <div class="mt-8 flex flex-wrap gap-4">
+      <label class="flex flex-col gap-1.5 font-body text-xs font-medium text-noir-profond/60">
+        Catégorie
+        <select id="filtre-categorie" class="rounded-full border border-noir-profond/15 px-4 py-2 font-body text-sm text-noir-profond">
+          {categories.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1.5 font-body text-xs font-medium text-noir-profond/60">
+        Transmission
+        <select id="filtre-transmission" class="rounded-full border border-noir-profond/15 px-4 py-2 font-body text-sm text-noir-profond">
+          {transmissions.map((t) => <option value={t}>{t}</option>)}
+        </select>
+      </label>
+      <label class="flex flex-col gap-1.5 font-body text-xs font-medium text-noir-profond/60">
+        Carburant
+        <select id="filtre-carburant" class="rounded-full border border-noir-profond/15 px-4 py-2 font-body text-sm text-noir-profond">
+          {carburants.map((c) => <option value={c}>{c}</option>)}
+        </select>
+      </label>
+    </div>
+
+    <div id="grille-vehicules" class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        vehicules.map((vehicule, i) => (
+          <div data-reveal style={`--reveal-delay: ${(i % 6) * 80}ms`}>
+            <CarCard vehicule={vehicule} />
+          </div>
+        ))
+      }
+    </div>
+
+    <p id="aucun-resultat" class="mt-10 hidden text-center font-body text-sm text-noir-profond/50">
+      Aucun véhicule ne correspond à ces critères pour le moment. Contactez-nous sur WhatsApp, nous trouverons une solution.
+    </p>
+  </section>
+</Layout>
+
+<script>
+  function initFiltresFlotte() {
+    const categorieSelect = document.getElementById("filtre-categorie") as HTMLSelectElement | null;
+    const transmissionSelect = document.getElementById("filtre-transmission") as HTMLSelectElement | null;
+    const carburantSelect = document.getElementById("filtre-carburant") as HTMLSelectElement | null;
+    if (!categorieSelect || !transmissionSelect || !carburantSelect) return;
+
+    const cards = Array.from(document.querySelectorAll<HTMLElement>("#grille-vehicules > [data-reveal]"));
+    const aucunResultat = document.getElementById("aucun-resultat");
+
+    const categorieParam = new URLSearchParams(window.location.search).get("categorie");
+    if (categorieParam && [...categorieSelect.options].some((o) => o.value === categorieParam)) {
+      categorieSelect.value = categorieParam;
+    }
+
+    function applyFilters() {
+      const categorie = categorieSelect!.value;
+      const transmission = transmissionSelect!.value;
+      const carburant = carburantSelect!.value;
+      let visibleCount = 0;
+
+      for (const card of cards) {
+        const article = card.querySelector<HTMLElement>("article");
+        const matchCategorie = categorie === "Toutes" || article?.dataset.categorie === categorie;
+        const matchTransmission = transmission === "Toutes" || article?.dataset.transmission === transmission;
+        const matchCarburant = carburant === "Tous" || article?.dataset.carburant === carburant;
+        const visible = matchCategorie && matchTransmission && matchCarburant;
+        card.classList.toggle("hidden", !visible);
+        if (visible) visibleCount++;
+      }
+
+      aucunResultat?.classList.toggle("hidden", visibleCount > 0);
+    }
+
+    categorieSelect.addEventListener("change", applyFilters);
+    transmissionSelect.addEventListener("change", applyFilters);
+    carburantSelect.addEventListener("change", applyFilters);
+
+    if (categorieParam) {
+      applyFilters();
+    }
+  }
+
+  document.addEventListener("astro:page-load", initFiltresFlotte);
+</script>

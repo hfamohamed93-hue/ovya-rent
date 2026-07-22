@@ -1,0 +1,13 @@
+/* Charte graphique OVYA RENT V1.0 — source de vérité pour les couleurs et typographies */
+@theme {
+  --color-rouge-maroc: #c8102e;
+  --color-noir-profond: #111111;
+  --color-dore-premium: #d4af37;
+  --color-blanc-pur: #ffffff;
+  --color-fond: #f8f9fa;
+
+  --font-heading: "Montserrat", sans-serif;
+  --font-body: "Poppins", "Inter", sans-serif;
+
+  --radius-card: 12px;
+}

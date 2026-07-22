@@ -1,0 +1,39 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const valeurs = [
+  { titre: "Modernité", texte: "Une flotte régulièrement renouvelée, à la pointe du confort et de la sécurité." },
+  { titre: "Prestige", texte: "Un service pensé pour offrir une expérience de location premium, sans complexité." },
+  { titre: "Fiabilité", texte: "Des conditions claires, sans frais cachés, communiquées avant chaque réservation." },
+  { titre: "Réactivité", texte: "Une équipe joignable directement sur WhatsApp, pour des réponses rapides." },
+];
+---
+
+<Layout
+  title="À propos"
+  description="OVYA Rent est une agence de location de véhicules récents et premium au Maroc, présente à Marrakech, Casablanca, Agadir et Rabat."
+>
+  <section class="relative overflow-hidden">
+    <div class="relative mx-auto max-w-4xl px-4 py-14 sm:px-6">
+    <h1 class="font-heading text-3xl font-bold text-noir-profond sm:text-4xl">À propos d'OVYA Rent</h1>
+    <span class="mt-3 block h-px w-16 bg-dore-premium"></span>
+    <p class="mt-6 font-body text-base leading-relaxed text-noir-profond/70">
+      OVYA Rent se positionne comme un acteur de référence dans la location de véhicules récents et premium
+      au Maroc. Notre ambition : inspirer la rigueur, l'excellence du service et une totale sérénité pour le
+      conducteur, à Marrakech, Casablanca, Agadir et Rabat.
+    </p>
+    <p class="mt-4 font-heading text-lg font-bold text-rouge-maroc">« Prenez la route en toute confiance. »</p>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2">
+      {
+        valeurs.map((valeur) => (
+          <div class="rounded-[12px] bg-fond p-6">
+            <p class="font-heading text-lg font-bold text-noir-profond">{valeur.titre}</p>
+            <p class="mt-2 font-body text-sm text-noir-profond/60">{valeur.texte}</p>
+          </div>
+        ))
+      }
+    </div>
+    </div>
+  </section>
+</Layout>

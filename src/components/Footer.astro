@@ -1,0 +1,71 @@
+---
+import { Image } from "astro:assets";
+import logo from "../assets/logo.png";
+import { whatsappLink } from "../lib/whatsapp";
+import MoroccanDivider from "./MoroccanDivider.astro";
+import ZelligeWatermark from "./ZelligeWatermark.astro";
+import { t, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const { locale = "fr" } = Astro.props;
+const strings = t(locale);
+
+const year = new Date().getFullYear();
+---
+
+<footer class="relative overflow-hidden bg-noir-profond text-blanc-pur">
+  <MoroccanDivider variant="sombre" />
+  <ZelligeWatermark variant="sombre" />
+  <div class="relative mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-3">
+    <div>
+      <Image src={logo} alt="OVYA Rent" width={130} height={65} class="h-11 w-auto" />
+      <p class="mt-4 font-body text-sm text-blanc-pur/70">
+        {strings.footer.accroche}
+      </p>
+    </div>
+
+    <div>
+      <h3 class="font-heading text-sm font-bold uppercase tracking-wide text-dore-premium">{strings.footer.navigation}</h3>
+      <ul class="mt-4 space-y-2 font-body text-sm text-blanc-pur/70">
+        <li><a href="/flotte" class="hover:text-blanc-pur">{strings.nav.flotte}</a></li>
+        <li><a href="/tarifs" class="hover:text-blanc-pur">{strings.nav.tarifs}</a></li>
+        <li><a href="/reservation" class="hover:text-blanc-pur">{strings.nav.reserver}</a></li>
+        <li><a href="/a-propos" class="hover:text-blanc-pur">{strings.nav.aPropos}</a></li>
+        <li><a href="/faq" class="hover:text-blanc-pur">{strings.nav.faq}</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-heading text-sm font-bold uppercase tracking-wide text-dore-premium">{strings.footer.contact}</h3>
+      <ul class="mt-4 space-y-2 font-body text-sm text-blanc-pur/70">
+        <li>
+          <a href={whatsappLink()} target="_blank" rel="noopener noreferrer" class="hover:text-blanc-pur">
+            WhatsApp : +33 7 59 45 60 47
+          </a>
+        </li>
+        <li>
+          <a href="mailto:contact.ovya.rent@gmail.com" class="hover:text-blanc-pur">
+            contact.ovya.rent@gmail.com
+          </a>
+        </li>
+        <li>
+          <a href="https://www.tiktok.com/@ovya.rent" target="_blank" rel="noopener noreferrer" class="hover:text-blanc-pur">
+            TikTok : @ovya.rent
+          </a>
+        </li>
+        <li><a href="/contact" class="hover:text-blanc-pur">{strings.footer.formulaireContact}</a></li>
+      </ul>
+      <div class="mt-6 flex gap-4 font-body text-xs text-blanc-pur/50">
+        <a href="/mentions-legales" class="hover:text-blanc-pur/80">{strings.footer.mentionsLegales}</a>
+        <a href="/cgv" class="hover:text-blanc-pur/80">{strings.footer.cgv}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative border-t border-blanc-pur/10 px-4 py-5 text-center font-body text-xs text-blanc-pur/50 sm:px-6">
+    © {year} OVYA Rent. {strings.footer.droits}
+  </div>
+</footer>

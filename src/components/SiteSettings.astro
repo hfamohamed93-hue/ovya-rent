@@ -1,0 +1,153 @@
+---
+import { locales, localeLabels, localeFlags, localizedPath, type Locale } from "../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<div class="relative font-body text-xs font-semibold" data-settings-switcher>
+  <button
+    type="button"
+    data-settings-toggle
+    class="settings-toggle-btn flex cursor-pointer items-center gap-1.5 rounded-full border border-noir-profond/15 px-2.5 py-1.5 text-noir-profond/70 transition-colors hover:border-noir-profond/30 hover:text-noir-profond"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <span class="text-sm" aria-hidden="true">{localeFlags[locale]}</span>
+    <span>{localeLabels[locale]}</span>
+    <span class="text-noir-profond/20">·</span>
+    <span data-settings-currency-label>EUR</span>
+    <svg class="settings-chevron h-3 w-3 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="6 9 12 15 18 9"></polyline>
+    </svg>
+  </button>
+
+  <div
+    data-settings-menu
+    class="absolute right-0 top-full z-50 mt-2 hidden w-56 flex-col overflow-hidden rounded-xl border border-noir-profond/10 bg-blanc-pur py-3 shadow-[0_12px_32px_-8px_rgba(17,17,17,0.28)]"
+  >
+    <p class="px-4 pb-1.5 font-body text-[10px] font-semibold uppercase tracking-wide text-noir-profond/40">Langue</p>
+    {
+      locales.map((l) => (
+        <a
+          href={localizedPath(currentPath, l)}
+          class:list={[
+            "flex items-center gap-2 px-4 py-2 transition-colors hover:bg-fond",
+            l === locale ? "text-rouge-maroc" : "text-noir-profond/70 hover:text-noir-profond",
+          ]}
+          aria-current={l === locale ? "true" : undefined}
+        >
+          <span class="text-sm" aria-hidden="true">{localeFlags[l]}</span>
+          <span>{localeLabels[l]}</span>
+        </a>
+      ))
+    }
+
+    <div class="my-2 border-t border-noir-profond/10"></div>
+
+    <p class="px-4 pb-1.5 font-body text-[10px] font-semibold uppercase tracking-wide text-noir-profond/40">Devise</p>
+    <div class="px-4">
+      <div class="relative flex items-center rounded-full border border-noir-profond/15 p-0.5">
+        <span
+          class="currency-thumb pointer-events-none absolute inset-y-0.5 left-0.5 w-[calc(50%-2px)] rounded-full bg-rouge-maroc transition-transform duration-300 ease-out"
+          data-currency-thumb
+        ></span>
+        <button type="button" data-currency-option="EUR" class="relative z-10 w-1/2 py-1.5 text-center transition-colors duration-300" aria-pressed="true">
+          EUR
+        </button>
+        <button type="button" data-currency-option="MAD" class="relative z-10 w-1/2 py-1.5 text-center transition-colors duration-300" aria-pressed="false">
+          MAD
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "ovya-currency";
+
+  function getCurrency(): "EUR" | "MAD" {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored === "MAD" ? "MAD" : "EUR";
+  }
+
+  function applyCurrency(currency: "EUR" | "MAD") {
+    document.querySelectorAll<HTMLElement>("[data-price-eur]").forEach((el) => {
+      const eur = el.dataset.priceEur;
+      const mad = el.dataset.priceMad;
+      const value = currency === "EUR" ? eur : mad;
+      const symbol = currency === "EUR" ? "€" : "MAD";
+      const suffix = el.dataset.suffix ?? "";
+      if (value === undefined) return;
+      el.textContent = el.tagName === "OPTION" ? `${el.dataset.label ?? ""}${value} ${symbol}${suffix}` : `${value} ${symbol}`;
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-currency-thumb]").forEach((thumb) => {
+      thumb.style.transform = currency === "MAD" ? "translateX(100%)" : "translateX(0)";
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-currency-option]").forEach((btn) => {
+      const isActive = btn.dataset.currencyOption === currency;
+      btn.setAttribute("aria-pressed", String(isActive));
+      btn.classList.toggle("text-blanc-pur", isActive);
+      btn.classList.toggle("text-noir-profond/50", !isActive);
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-settings-currency-label]").forEach((el) => {
+      el.textContent = currency;
+    });
+  }
+
+  function initSiteSettings() {
+    applyCurrency(getCurrency());
+
+    document.querySelectorAll<HTMLButtonElement>("[data-currency-option]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const next = (btn.dataset.currencyOption as "EUR" | "MAD") ?? "EUR";
+        localStorage.setItem(STORAGE_KEY, next);
+        applyCurrency(next);
+      });
+    });
+
+    const wrap = document.querySelector<HTMLElement>("[data-settings-switcher]");
+    const toggle = wrap?.querySelector<HTMLButtonElement>("[data-settings-toggle]");
+    const menu = wrap?.querySelector<HTMLElement>("[data-settings-menu]");
+    const chevron = wrap?.querySelector<HTMLElement>(".settings-chevron");
+    if (!wrap || !toggle || !menu) return;
+
+    const closeMenu = () => {
+      menu.classList.add("hidden");
+      menu.classList.remove("flex");
+      toggle.setAttribute("aria-expanded", "false");
+      chevron?.classList.remove("rotate-180");
+    };
+
+    const openMenu = () => {
+      menu.classList.remove("hidden");
+      menu.classList.add("flex");
+      toggle.setAttribute("aria-expanded", "true");
+      chevron?.classList.add("rotate-180");
+    };
+
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const isOpen = toggle.getAttribute("aria-expanded") === "true";
+      if (isOpen) closeMenu();
+      else openMenu();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!wrap.contains(event.target as Node)) closeMenu();
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") closeMenu();
+    });
+  }
+
+  document.addEventListener("astro:page-load", initSiteSettings);
+</script>

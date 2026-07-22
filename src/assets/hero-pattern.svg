@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640" role="presentation" aria-hidden="true">
+  <defs>
+    <clipPath id="arch">
+      <path d="M120 620V300a200 200 0 0 1 400 0v320z" />
+    </clipPath>
+    <pattern id="stars" width="70" height="70" patternUnits="userSpaceOnUse">
+      <path d="M35 14l6 15 16 3-12 11 3 16-13-8-13 8 3-16-12-11 16-3z" fill="#D4AF37" opacity="0.15" />
+    </pattern>
+  </defs>
+
+  <rect x="120" y="300" width="400" height="320" fill="url(#stars)" clip-path="url(#arch)" />
+  <path d="M120 620V300a200 200 0 0 1 400 0v320" fill="none" stroke="#D4AF37" stroke-width="3" opacity="0.35" />
+  <path d="M160 620V310a160 160 0 0 1 320 0v310" fill="none" stroke="#C8102E" stroke-width="2" opacity="0.3" />
+</svg>

@@ -1,0 +1,125 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { Image } from "astro:assets";
+import { categorieImage } from "../../lib/categorie-image";
+import { getVehiculePhoto } from "../../lib/vehicule-image";
+import { equipements } from "../../lib/equipements";
+import { getCollection, render } from "astro:content";
+import { whatsappLink } from "../../lib/whatsapp";
+
+export async function getStaticPaths() {
+  const vehicules = await getCollection("vehicules");
+  return vehicules.map((vehicule) => ({
+    params: { slug: vehicule.id },
+    props: { vehicule },
+  }));
+}
+
+const { vehicule } = Astro.props;
+const { data } = vehicule;
+const {
+  marque,
+  modele,
+  categorie,
+  transmission,
+  carburant,
+  places,
+  prixParJourMAD,
+  prixParJourEUR,
+  villesDisponibles,
+} = data;
+
+const { Content } = await render(vehicule);
+const image = getVehiculePhoto(data.photo) ?? categorieImage[categorie];
+const equipementsVehicule = equipements[categorie] ?? [];
+
+const villesLabels: Record<string, string> = {
+  marrakech: "Marrakech",
+  casablanca: "Casablanca",
+  agadir: "Agadir",
+  rabat: "Rabat",
+  tanger: "Tanger",
+  tetouan: "Tétouan",
+  fes: "Fès",
+  oujda: "Oujda",
+  essaouira: "Essaouira",
+  "beni-mellal": "Béni Mellal",
+  "al-hoceima": "Al Hoceima",
+  nador: "Nador",
+};
+
+const prixAffiche = prixParJourEUR ?? prixParJourMAD;
+const message = `Bonjour OVYA Rent, je souhaite réserver la ${marque} ${modele} (${prixAffiche} €/jour). Dates souhaitées : `;
+---
+
+<Layout title={`${marque} ${modele}`} description={`Location ${marque} ${modele} au Maroc — ${categorie}, ${transmission}, ${prixAffiche} €/jour chez OVYA Rent.`}>
+  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+    <a href="/flotte" class="font-body text-sm font-medium text-noir-profond/50 hover:text-rouge-maroc">← Retour à la flotte</a>
+
+    <div class="mt-6 grid gap-10 lg:grid-cols-2">
+      <Image src={image} alt={`${marque} ${modele}`} width={600} height={400} class="h-72 w-full rounded-[12px] object-cover lg:h-full" />
+
+      <div>
+        <p class="font-body text-xs font-medium uppercase tracking-wide text-noir-profond/50">{categorie}</p>
+        <h1 class="mt-1 font-heading text-3xl font-bold text-noir-profond sm:text-4xl">{marque} {modele}</h1>
+
+        <div class="mt-6 flex items-baseline gap-2">
+          <p class="font-heading text-3xl font-bold text-rouge-maroc">
+            <span data-price-eur={prixParJourEUR ?? prixParJourMAD} data-price-mad={prixParJourMAD}>{prixParJourEUR ?? prixParJourMAD} €</span>
+          </p>
+          <span class="font-body text-sm text-noir-profond/50">/ jour</span>
+        </div>
+
+        <dl class="mt-8 grid grid-cols-2 gap-4 font-body text-sm">
+          <div class="rounded-[12px] bg-fond p-4">
+            <dt class="text-noir-profond/50">Transmission</dt>
+            <dd class="mt-1 font-medium text-noir-profond">{transmission}</dd>
+          </div>
+          <div class="rounded-[12px] bg-fond p-4">
+            <dt class="text-noir-profond/50">Carburant</dt>
+            <dd class="mt-1 font-medium text-noir-profond">{carburant}</dd>
+          </div>
+          <div class="col-span-2 rounded-[12px] bg-fond p-4">
+            <dt class="text-noir-profond/50">Places</dt>
+            <dd class="mt-1 font-medium text-noir-profond">{places}</dd>
+          </div>
+        </dl>
+
+        {
+          equipementsVehicule.length > 0 && (
+            <div class="mt-8">
+              <p class="font-heading text-sm font-bold uppercase tracking-wide text-noir-profond">Équipements inclus</p>
+              <ul class="mt-3 flex flex-wrap gap-2">
+                {equipementsVehicule.map((item) => (
+                  <li class="flex items-center gap-1.5 rounded-full border border-dore-premium/40 bg-fond px-3 py-1.5 font-body text-xs font-medium text-noir-profond/80">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C8102E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        <div class="mt-6 font-body text-sm leading-relaxed text-noir-profond/70">
+          <Content />
+        </div>
+
+        <p class="mt-6 font-body text-xs text-noir-profond/50">
+          Disponible à : {villesDisponibles.map((v) => villesLabels[v] ?? v).join(", ")}
+        </p>
+
+        <a
+          href={whatsappLink(message)}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-shine mt-8 inline-block rounded-full bg-rouge-maroc px-7 py-3.5 font-body text-sm font-semibold text-blanc-pur transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#a80d26]"
+        >
+          Réserver ce véhicule sur WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
