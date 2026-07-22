@@ -4,7 +4,7 @@ Site vitrine et transactionnel de l'agence de location de voitures OVYA Rent (Ma
 
 ## Prérequis
 
-- [Node.js](https://nodejs.org/) 18.20.8+ ou 20.3.0+ (LTS recommandé)
+- [Node.js](https://nodejs.org/) 20.3.0+ (22.x recommandé — évite les soucis ESM observés avec certaines versions 18.x sur Hostinger)
 
 ## Commandes
 
@@ -33,7 +33,7 @@ Le site tourne en mode serveur Astro (`output: "server"`, adaptateur `@astrojs/n
 - Commande de build : `npm run build`
 - Commande de démarrage : `npm start` (exécute `node ./dist/server/entry.mjs`)
 - Le serveur écoute sur `process.env.PORT` (et `process.env.HOST`) fournis par Hostinger
-- Version de Node requise : voir le champ `engines` de `package.json` (18.20.8+)
+- Version de Node à sélectionner sur Hostinger : **20.x ou 22.x** (pas 18.x — a provoqué une erreur de build ESM lors du premier essai)
 
 ## À compléter avant mise en ligne
 
